@@ -14,40 +14,17 @@ def extract_pdf_to_markdown(pdf_path):
     with pdfplumber.open(pdf_path) as pdf:
         md_text = ""
 
-        # Loop through each page in the PDF
         for page in pdf.pages:
-            # Extract text using the dictionary format for more structure
-            blocks = page.extract_text("dict")["blocks"]
+            text = page.extract_text()
+            if text:
+                md_text += text + "\n\n"
 
-            for block in blocks:
-                # Check if it's a text block
-                if block["type"] == 0:
-                    for line in block["lines"]:
-                        line_text = ""
-                        for span in line["spans"]:
-                            text = span["text"]
-
-                            # Check for bold text
-                            if span.get("flags", 0) & 2:  # Bold text
-                                text = f"**{text}**"
-                            # Check for italic text
-                            if span.get("flags", 0) & 1:  # Italic text
-                                text = f"*{text}*"
-
-                            line_text += text  # Concatenate the text
-
-                        # Add the processed line to the markdown text
-                        md_text += line_text + "\n"
-
-                    md_text += "\n"  # Add an empty line after each block
-
-            # Extract tables and convert them into markdown
             tables = page.extract_tables()
             for table in tables:
                 for row in table:
-                    row_text = "| " + " | ".join(row) + " |"
+                    row_text = "| " + " | ".join(cell or "" for cell in row) + " |"
                     md_text += row_text + "\n"
-                md_text += "\n"  # Empty line between tables
+                md_text += "\n"
 
         return md_text
 
