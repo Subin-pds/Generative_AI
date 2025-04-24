@@ -1,4 +1,4 @@
-#Importing libraries
+#Importing reuired libraries
 from GenAIProject_1 import FileHandling
 from GenAIProject_1 import MarkdownConversion
 from GenAIProject_2 import Text_Ingestion
